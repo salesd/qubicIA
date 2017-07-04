@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ae2a7086556944e99bc000ce9c4f08d3
+timeCreated: 1498845390
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - rend: {instanceID: 0}
+  - colorPlayer: {fileID: 2100000, guid: 7b21da3a419af4f599b5f1bb67b1b3c8, type: 2}
+  - colorComputer: {fileID: 2100000, guid: ac74e3ed79844458fbf20895c73183ac, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
