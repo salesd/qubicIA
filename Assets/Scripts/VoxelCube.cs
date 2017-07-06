@@ -9,25 +9,44 @@ public class VoxelCube : MonoBehaviour {
 	private static int cubeCount = 0;
 	private static List<GameObject> cubes;
 
-	public BoxCollider collider;
+	public BoxCollider ccollider;
+
+	public GameObject[, , ] cubos = new GameObject[4,4,4];
+	public Dictionary<string, ItemIA> idCubos = new Dictionary<string, ItemIA>();
 
 	// Use this for initialization
 	void Start () {
-		for (float i = -3; i < 5; i+=2) {
-			for (float j = -3; j < 5; j+=2) {
-				for (float k = -3; k < 5; k+=2) {
-					MakeCube (new Vector3 (i, j, k), Color.white, 1);
+		int ii = 0;
+		for (float i = -3; i < 5; i+=2, ii++) {
+			int jj = 0;
+			for (float j = -3; j < 5; j+=2, jj++) {
+				int kk = 0;
+				for (float k = -3; k < 5; k+=2, kk++) {
+					cubos[ii, jj, kk] = MakeCube (new Vector3 (i, j, k), Color.white, 1);
+					ItemIA it = ScriptableObject.CreateInstance<ItemIA> ();
+					it.x = ii;
+					it.y = jj;
+					it.z = kk;
+					idCubos [cubos [ii, jj, kk].name] = it;
 				}
 			}
 		}
+		IA.getInstance().setInitialState (idCubos);
 	}
 
 	void Update() {
 		if (Input.GetButtonDown("Movimentar")) {
-			collider.size = new Vector3 (8, 8, 8);
+			ccollider.size = new Vector3 (8, 8, 8);
 		}
 		if (Input.GetButtonUp ("Movimentar")) {
-			collider.size = new Vector3 (0, 0, 0);
+			ccollider.size = new Vector3 (0, 0, 0);
+		}
+		if (Input.GetMouseButtonUp (0) && IA.getInstance().isTurnComputer()) {
+			string id = IA.getInstance ().computerTime ();
+			ItemIA it = idCubos [id];
+			Renderer rend = cubos[it.x, it.y, it.z].GetComponent<Renderer> ();
+			rend.material.color = Color.red;
+			IA.getInstance().changeTurn (false);
 		}
 	}
 
@@ -45,12 +64,12 @@ public class VoxelCube : MonoBehaviour {
 		{
 			cubeContainer = new GameObject("cube container");
 			cubeContainer.layer = 8;
-			collider = cubeContainer.AddComponent<BoxCollider> ();
+			ccollider = cubeContainer.AddComponent<BoxCollider> ();
 			MeshRenderer renderer = cubeContainer.AddComponent<MeshRenderer>();
-			collider.center = renderer.bounds.center;
-			collider.size = new Vector3 (0, 0, 0);
+			ccollider.center = renderer.bounds.center;
+			ccollider.size = new Vector3 (0, 0, 0);
 			RotateObj ro = cubeContainer.AddComponent<RotateObj> ();
-			ro.collider = collider;
+			ro.ccollider = ccollider;
 			cubes = new List<GameObject>();
 		}
 

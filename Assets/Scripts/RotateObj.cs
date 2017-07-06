@@ -5,7 +5,7 @@ using UnityEngine;
 public class RotateObj : MonoBehaviour {
 	public float rotationSpeed = 20;
 
-	public BoxCollider collider;
+	public BoxCollider ccollider;
 
 	void OnMouseDrag()
 	{

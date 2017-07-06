@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\IA.cs" />
      <Compile Include="Assets\Scripts\MarkCubePosition.cs" />
      <Compile Include="Assets\Scripts\RotateObj.cs" />
      <Compile Include="Assets\Scripts\VoxelCube.cs" />

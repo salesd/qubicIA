@@ -6,14 +6,15 @@ public class MarkCubePosition : MonoBehaviour {
 
 	public Renderer rend;
 
-	public Material colorPlayer;
-
-	public Material colorComputer;
-
 	void OnMouseDown() {
 		if (Input.GetMouseButton (0)) {
-			rend.material = colorPlayer;
-			Debug.Log (this.name);
+			int c = System.Convert.ToInt32 (this.name.Split ('_') [1]);
+			if (IA.getInstance ().jogadaPermitida (this.name)) {
+				rend.material.color = Color.blue;
+				IA.getInstance ().changeTurn (true);
+				IA.getInstance ().playerTime (this.name);
+			}
+			//Debug.Log (this.name);
 		}
 	}
 }
