@@ -31,7 +31,7 @@ public class VoxelCube : MonoBehaviour {
 				}
 			}
 		}
-		IA.getInstance().setInitialState (idCubos);
+		IaManager.getInstance().setInitialState (idCubos);
 	}
 
 	void Update() {
@@ -41,12 +41,12 @@ public class VoxelCube : MonoBehaviour {
 		if (Input.GetButtonUp ("Movimentar")) {
 			ccollider.size = new Vector3 (0, 0, 0);
 		}
-		if (Input.GetMouseButtonUp (0) && IA.getInstance().isTurnComputer()) {
-			string id = IA.getInstance ().computerTime ();
+		if (Input.GetMouseButtonUp (0) && IaManager.getInstance().isTurnComputer()) {
+			string id = IaManager.getInstance ().computerTime ();
 			ItemIA it = idCubos [id];
 			Renderer rend = cubos[it.x, it.y, it.z].GetComponent<Renderer> ();
 			rend.material.color = Color.red;
-			IA.getInstance().changeTurn (false);
+			IaManager.getInstance().changeTurn (false);
 		}
 	}
 

@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{FA447AD3-5E88-6DD9-4138-AC4380BAD4F3}</ProjectGuid>
+    <ProjectGuid>{C9C5ACED-AF37-B251-9AC8-2374AADD4A08}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -46,7 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\IA.cs" />
+     <Compile Include="Assets\Scripts\IaManager.cs" />
      <Compile Include="Assets\Scripts\MarkCubePosition.cs" />
      <Compile Include="Assets\Scripts\RotateObj.cs" />
      <Compile Include="Assets\Scripts\VoxelCube.cs" />
