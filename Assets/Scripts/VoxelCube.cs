@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class VoxelCube : MonoBehaviour {
 
 	private static GameObject cubePrefab;
@@ -27,11 +28,17 @@ public class VoxelCube : MonoBehaviour {
 					it.x = ii;
 					it.y = jj;
 					it.z = kk;
+					it.Jogada = Jogador.N;
 					idCubos [cubos [ii, jj, kk].name] = it;
 				}
 			}
 		}
-		IaManager.getInstance().setInitialState (idCubos);
+		IaManager.getInstance().setInitialState (this);
+	}
+
+	public string getIdCube(int x, int y, int z)
+	{
+		return cubos[x, y, z].name;
 	}
 
 	void Update() {
@@ -44,9 +51,8 @@ public class VoxelCube : MonoBehaviour {
 		if (Input.GetMouseButtonUp (0) && IaManager.getInstance().isTurnComputer()) {
 			string id = IaManager.getInstance ().computerTime ();
 			ItemIA it = idCubos [id];
-			Renderer rend = cubos[it.x, it.y, it.z].GetComponent<Renderer> ();
-			rend.material.color = Color.red;
-			IaManager.getInstance().changeTurn (false);
+			idCubos [id].Jogada = Jogador.O;
+
 		}
 	}
 

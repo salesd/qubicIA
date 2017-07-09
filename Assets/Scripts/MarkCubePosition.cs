@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MarkCubePosition : MonoBehaviour {
 
@@ -13,8 +14,18 @@ public class MarkCubePosition : MonoBehaviour {
 				rend.material.color = Color.blue;
 				IaManager.getInstance ().changeTurn (true);
 				IaManager.getInstance ().playerTime (this.name);
+				IaManager.getInstance ().avaliarJogada ();
+			}
+			if (IaManager.getInstance ().isTurnComputer ()) {
+				string id = IaManager.getInstance ().computerTime ();
+				IaManager.getInstance ().changeTurn (false);
+				IaManager.getInstance ().avaliarJogada ();
 			}
 			//Debug.Log (this.name);
+			if (IaManager.getInstance ().isGameOver ()) {
+				Destroy (IaManager.getInstance ());
+				SceneManager.LoadScene("Qubic", LoadSceneMode.Single);
+			}
 		}
 	}
 }
