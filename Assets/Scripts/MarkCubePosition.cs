@@ -16,14 +16,10 @@ public class MarkCubePosition : MonoBehaviour {
 				IaManager.getInstance ().playerTime (this.name);
 				IaManager.getInstance ().avaliarJogada ();
 			}
-			if (IaManager.getInstance ().isTurnComputer ()) {
-				string id = IaManager.getInstance ().computerTime ();
-				IaManager.getInstance ().changeTurn (false);
-				IaManager.getInstance ().avaliarJogada ();
-			}
 			//Debug.Log (this.name);
+
 			if (IaManager.getInstance ().isGameOver ()) {
-				Destroy (IaManager.getInstance ());
+				//Destroy (IaManager.getInstance ());
 				SceneManager.LoadScene("Qubic", LoadSceneMode.Single);
 			}
 		}

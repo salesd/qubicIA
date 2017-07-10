@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class VoxelCube : MonoBehaviour {
 
 	private static GameObject cubePrefab;
@@ -24,7 +23,7 @@ public class VoxelCube : MonoBehaviour {
 				int kk = 0;
 				for (float k = -3; k < 5; k+=2, kk++) {
 					cubos[ii, jj, kk] = MakeCube (new Vector3 (i, j, k), Color.white, 1);
-					ItemIA it = ScriptableObject.CreateInstance<ItemIA> ();
+					ItemIA it = new ItemIA ();
 					it.x = ii;
 					it.y = jj;
 					it.z = kk;
@@ -48,11 +47,17 @@ public class VoxelCube : MonoBehaviour {
 		if (Input.GetButtonUp ("Movimentar")) {
 			ccollider.size = new Vector3 (0, 0, 0);
 		}
-		if (Input.GetMouseButtonUp (0) && IaManager.getInstance().isTurnComputer()) {
-			string id = IaManager.getInstance ().computerTime ();
-			ItemIA it = idCubos [id];
-			idCubos [id].Jogada = Jogador.O;
+		if (Input.GetMouseButton (0)) {
+			if (IaManager.getInstance ().isTurnComputer ()) {
+				string idJog = IaManager.getInstance ().getMoveIA ();
+				IaManager.getInstance ().computerTime (idJog);
+				IaManager.getInstance ().changeTurn (false);
+				IaManager.getInstance ().avaliarJogada ();
 
+				ItemIA it = idCubos [idJog];
+				Renderer rend = cubos[it.x, it.y, it.z].GetComponent<Renderer> ();
+				rend.material.color = Color.red;
+			}
 		}
 	}
 
