@@ -1,4 +1,4 @@
-﻿using System;
+﻿                      using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Collections;
@@ -137,6 +137,8 @@ public class IaManager {
 				int score = 0;
 				string idj;
 				if (ia.valorHeuristica == 0) {
+					if (idJogada == "")
+						idJogada = idItem;
 					ia.idCubos [idItem].Jogada = Jogador.N;
 					ia.Insert (idItem, i);
 					continue;
