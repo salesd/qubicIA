@@ -53,7 +53,6 @@ public class VoxelCube : MonoBehaviour {
 				IaManager.getInstance ().computerTime (idJog);
 				IaManager.getInstance ().changeTurn (false);
 				IaManager.getInstance ().avaliarJogada ();
-
 				ItemIA it = idCubos [idJog];
 				Renderer rend = cubos[it.x, it.y, it.z].GetComponent<Renderer> ();
 				rend.material.color = Color.red;

@@ -23,11 +23,12 @@ public class IaManager {
 
 	private bool isComputerTime;
 
-	protected List<string> jogadasDisponiveis = new List<string>();
+	protected List<string> jogadasDisponiveis = new List<string> ();
+
+	protected List<string> avaliados = new List<string> ();
 
 	private string idJogadaPlayer;
 
-	//private VoxelCube vc;
 	private Dictionary<string, ItemIA> idCubos;
 
 	private ItemIA[,,] cubos;
@@ -36,6 +37,8 @@ public class IaManager {
 
 	private bool fimAvaliacao = false;
 
+	private int valorHeuristica = 0;
+
 	private IaManager() 
 	{
 		isComputerTime = false;
@@ -43,17 +46,9 @@ public class IaManager {
 		cubos = new ItemIA[4,4,4];
 	}
 
-	public IaManager Clone()
+	public static void Destroy()
 	{
-		IaManager ia = new IaManager();
-		foreach (KeyValuePair<string, ItemIA> entry in idCubos) {
-			ia.cubos [entry.Value.x, entry.Value.y, entry.Value.z] = entry.Value;
-			ia.idCubos.Add (entry.Key, entry.Value);
-		}
-		foreach (string idj in jogadasDisponiveis) {
-			ia.jogadasDisponiveis.Add (idj);
-		}
-		return ia;
+		instance = null;
 	}
 
 	public bool isGameOver()
@@ -63,6 +58,10 @@ public class IaManager {
 
 	public bool isEndEval()
 	{
+		if (fimAvaliacao) {
+			fimAvaliacao = false;
+			return true;
+		}
 		return fimAvaliacao;
 	}
 
@@ -82,17 +81,97 @@ public class IaManager {
 		return instance;
 	}
 
+	private void imprimeEstato()
+	{
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				for (int k = 0; k < 4; k++) {
+					Debug.Log (String.Format("{0},{1},{2}", i, j, k) + cubos [i, j, k].Jogada);
+				}
+			}
+		}
+	}
+
 	public string getMoveIA()
 	{
 		//Joga otimamente
-		//Implementação minimax
-
+		string idj;
+		//imprimeEstato ();
+		MiniMax (3, this, TipoNivel.Max, out idj);
+		//imprimeEstato ();
+		//Debug.Log ("Saiu " + idj + " R " + jogadasDisponiveis.Count);
+		return idj;
 		//Joga aleatoriamente
-		System.Random rnd = new System.Random();
-		int idx = rnd.Next (0, jogadasDisponiveis.Count-1);
-		return jogadasDisponiveis[idx];
+		//System.Random rnd = new System.Random();
+		//int idx = rnd.Next (0, jogadasDisponiveis.Count-1);
+		//return jogadasDisponiveis[idx];
 	}
 
+	static int MiniMax(int deep, IaManager ia, TipoNivel tipo , out string idJogada)
+	{
+		idJogada = "";
+		int alpha = tipo == TipoNivel.Max ? -2 : 2;
+		for (int i = ia.jogadasDisponiveis.Count - 1; i >= 0; i--) {
+			string idItem = ia.jogadasDisponiveis [i];
+			if (tipo == TipoNivel.Max)
+				ia.computerTime (idItem);
+			else
+				ia.playerTime (idItem);
+			Jogador j = ia.avaliarJogada (false);
+			//Debug.Log ("idCubos2 " + j.ToString() + " R " + ia.jogadasDisponiveis.Count);
+			if (ia.isEndEval () || deep == 0) {
+				ia.idCubos [idItem].Jogada = Jogador.N;
+				ia.Insert (idItem, i);
+				idJogada = idItem;
+				if (j == Jogador.N) {
+					if (deep == 0)
+						return ia.valorHeuristica;
+					else
+						return 0;
+				} else if (j == Jogador.O) {
+					return -2;
+				} else if (j == Jogador.X) {
+					return 2;
+				}
+			} else {
+				int score = 0;
+				string idj;
+				if (ia.valorHeuristica == 0) {
+					ia.idCubos [idItem].Jogada = Jogador.N;
+					ia.Insert (idItem, i);
+					continue;
+				}
+				if (tipo == TipoNivel.Max) {
+					score = MiniMax (deep - 1, ia, TipoNivel.Min, out idj);
+					if (idj != "") {
+						ia.idCubos [idItem].Jogada = Jogador.N;
+						ia.Insert (idItem, i);
+						if (score >= alpha) {
+							alpha = score;
+							idJogada = idj;
+						}
+						if (alpha == 2)
+							break;
+					}
+				} else {
+					score = MiniMax (deep - 1, ia, TipoNivel.Max, out idj);
+					if (idj != "") {
+						ia.idCubos [idItem].Jogada = Jogador.N;
+						ia.Insert (idItem, i);
+						if (score <= alpha) {
+							alpha = score;
+							idJogada = idj;
+						}
+						if (alpha == -2)
+							break;
+					}
+				}
+			}
+
+		}
+		//Debug.Log ("idJogada: " + idJogada + ", alpha: " + alpha); 
+		return alpha;
+	}
 
 	public bool jogadaPermitida(string idJogada)
 	{
@@ -101,13 +180,26 @@ public class IaManager {
 		return jogadasDisponiveis.Contains (idJogada);
 	}
 
-	public void playerTime(string idJogada)
+	private void Insert(string idJogada, int index)
 	{
-		idJogadaPlayer = idJogada;
+		if (jogadasDisponiveis.Count > index) {
+			jogadasDisponiveis.Insert (index, idJogada);
+		} else {
+			jogadasDisponiveis.Add (idJogada);
+		}
+	}
+
+	private void Remove(string idJogada)
+	{
+		jogadasDisponiveis.Remove (idJogada);
+	}
+
+	public void playerTime(string idJogadaPlayer)
+	{
 		idCubos [idJogadaPlayer].Jogada = Jogador.X;
 		ItemIA it = idCubos [idJogadaPlayer];
-		//Debug.Log (it.x + ", " + it.y + ", " + it.z);
-		jogadasDisponiveis.Remove (idJogada);
+		//Debug.Log (iia.x + ", " + iia.y + ", " + iia.z);
+		Remove(idJogadaPlayer);
 	}
 
 	public void changeTurn(bool time)
@@ -119,7 +211,7 @@ public class IaManager {
 	{
 		if (idCubos.ContainsKey(idJogadaComp)) {
 			idCubos [idJogadaComp].Jogada = Jogador.O;
-			jogadasDisponiveis.Remove (idJogadaComp);
+			Remove (idJogadaComp);
 		}
 	}
 
@@ -130,15 +222,35 @@ public class IaManager {
 		return isComputerTime;
 	}
 
+	private void avaliarHeuristica(Jogador jogada)
+	{
+		if (jogada == Jogador.O) {
+			if (valorHeuristica <= 0)
+				valorHeuristica = -1;
+			else
+				valorHeuristica = 0;
+		} else if (jogada == Jogador.X) {
+			if (valorHeuristica >= 0)
+				valorHeuristica = 1;
+			else
+				valorHeuristica = 0;
+		}
+	}
+
 	private Jogador avaliaEstados1(bool finalizavel)
 	{
-		int[] col = new int[3];
 		//Teste diagonal principal cubo
 		Jogador t = Jogador.N;
 		bool vencedor = true;
+		valorHeuristica = 0;
 		for (int i = 0; i < 4; i++) {
 			//Teste diagonal principal
-			if (i > 0 && t != cubos[i, i, i].Jogada || cubos[col [0], col [1], col [2]].Jogada == Jogador.N) {
+			avaliarHeuristica(cubos[i, i, i].Jogada);
+			if (cubos[i, i, i].Jogada == Jogador.N) {
+				vencedor = false;
+				continue;
+			}
+			if (i > 0 && t != cubos[i, i, i].Jogada) {
 				vencedor = false;
 				break;
 			}
@@ -169,7 +281,14 @@ public class IaManager {
 				for (col [(idx + 1) % 3] = 0; col [(idx + 1) % 3] < 4; col [(idx + 1) % 3]++) {
 					col [(idx + 2) % 3] = col [(idx + 1) % 3];
 					//Debug.Log(String.Format ("{0}, {1}, {2}", col [0], col [1], col [2]));
-					if (col [(idx + 1) % 3] > 0 && t != cubos[col [0], col [1], col [2]].Jogada || cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+					avaliarHeuristica(cubos [col [0], col [1], col [2]].Jogada);
+					if (cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+						vencedor = false;
+						continue;
+					}
+
+					if (col [(idx + 1) % 3] > 0 && t != cubos[col [0], col [1], col [2]].Jogada) {
+						valorHeuristica = 0;
 						vencedor = false;
 						break;
 					}
@@ -196,9 +315,15 @@ public class IaManager {
 				//Teste diagonais planos eixos
 				bool vencedor = true;
 				t = Jogador.N;
+				valorHeuristica = 0;
 				for (col [(idx + 1) % 3] = 0; col [(idx + 1) % 3] < 4; col [(idx + 1) % 3]++) {
 					col [(idx + 2) % 3] = 3 - col [(idx + 1) % 3];
-					if (col [(idx + 1) % 3] > 0 && t != cubos [col [0], col [1], col [2]].Jogada || cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+					avaliarHeuristica(cubos [col [0], col [1], col [2]].Jogada);
+					if (cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+						vencedor = false;
+						continue;
+					}
+					if (col [(idx + 1) % 3] > 0 && t != cubos [col [0], col [1], col [2]].Jogada) {
 						vencedor = false;
 						break;
 					}
@@ -226,15 +351,21 @@ public class IaManager {
 			//Teste diagonais secundarias
 			bool vencedor = true;
 			t = Jogador.N;
+			valorHeuristica = 0;
 			for (col [idx % 3] = 0; col [idx % 3] < 4; col [idx % 3]++) {
 				col [(idx + 1) % 3] = 3 - col [idx % 3];
 				col [(idx + 2) % 3] = col [(idx + 1) % 3];
-				if (col [idx % 3] > 0 && t != cubos [col [0], col [1], col [2]].Jogada || cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+				avaliarHeuristica(cubos [col [0], col [1], col [2]].Jogada);
+				if (cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+					vencedor = false;
+					continue;
+				}
+				if (col [idx % 3] > 0 && t != cubos [col [0], col [1], col [2]].Jogada) {
 					vencedor = false;
 					break;
 				}
 				t = cubos [col [0], col [1], col [2]].Jogada;
-				//Debug.Log(String.Format ("{0}, {1}, {2} - {3}", col [0], col [1], col [2], t.ToString()));
+				//Debug.Log(String.Format ("{0}, {1}, {2} - {3}", col [0], col [1], col [2], ia.ToString()));
 			}
 			if (vencedor) {
 				fimDeJogo = finalizavel;
@@ -257,13 +388,19 @@ public class IaManager {
 					//Teste planos eixos
 					t = Jogador.N;
 					bool vencedor = true;
+					valorHeuristica = 0;
 					for (col [(idx + 2) % 3] = 0; col [(idx + 2) % 3] < 4; col [(idx + 2) % 3]++) {
-						if (col [(idx + 2) % 3] > 0 && t != cubos [col [0], col [1], col [2]].Jogada || cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+						avaliarHeuristica(cubos [col [0], col [1], col [2]].Jogada);
+						if (cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
+							vencedor = false;
+							continue;
+						}
+						if ((col [(idx + 2) % 3] > 0 && t != cubos [col [0], col [1], col [2]].Jogada) || cubos [col [0], col [1], col [2]].Jogada == Jogador.N) {
 							vencedor = false;
 							break;
 						}
 						t = cubos [col [0], col [1], col [2]].Jogada;
-						//Debug.Log(String.Format("{0}, {1}, {2} - {3}", col [0], col [1], col [2], t.ToString()));
+						//Debug.Log(String.Format("{0}, {1}, {2} - {3}", col [0], col [1], col [2], ia.ToString()));
 					}
 					if (vencedor) {
 						fimDeJogo = finalizavel;
@@ -284,7 +421,7 @@ public class IaManager {
 	}
 	public Jogador avaliarJogada (bool finalizavel)
 	{
-		Jogador t; 
+		Jogador t;
 		t = avaliaEstados1 (finalizavel);
 		if (t != Jogador.N) {
 			return t;
@@ -294,8 +431,9 @@ public class IaManager {
 			return t;
 		}
 		t = avaliaEstados3 (finalizavel);
-		if (t != Jogador.N)
+		if (t != Jogador.N) {
 			return t;
+		}
 		t = avaliaEstados4 (finalizavel);
 		if (t != Jogador.N) {
 			return t;

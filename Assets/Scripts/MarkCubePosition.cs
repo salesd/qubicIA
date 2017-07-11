@@ -19,7 +19,7 @@ public class MarkCubePosition : MonoBehaviour {
 			//Debug.Log (this.name);
 
 			if (IaManager.getInstance ().isGameOver ()) {
-				//Destroy (IaManager.getInstance ());
+				IaManager.Destroy ();
 				SceneManager.LoadScene("Qubic", LoadSceneMode.Single);
 			}
 		}
