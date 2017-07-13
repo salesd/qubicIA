@@ -39,6 +39,12 @@ public class IaManager {
 
 	private int valorHeuristica = 0;
 
+	private Jogador jogadaAvaliada;
+
+	public Jogador Jogada {
+		get { return jogadaAvaliada; }
+	}
+
 	private IaManager() 
 	{
 		isComputerTime = false;
@@ -117,20 +123,20 @@ public class IaManager {
 				ia.computerTime (idItem);
 			else
 				ia.playerTime (idItem);
-			Jogador j = ia.avaliarJogada (false);
+			ia.avaliarJogada (false);
 			//Debug.Log ("idCubos2 " + j.ToString() + " R " + ia.jogadasDisponiveis.Count);
 			if (ia.isEndEval () || deep == 0) {
 				ia.idCubos [idItem].Jogada = Jogador.N;
 				ia.Insert (idItem, i);
 				idJogada = idItem;
-				if (j == Jogador.N) {
+				if (ia.jogadaAvaliada == Jogador.N) {
 					if (deep == 0)
 						return ia.valorHeuristica;
 					else
 						return 0;
-				} else if (j == Jogador.O) {
+				} else if (ia.jogadaAvaliada == Jogador.O) {
 					return -2;
-				} else if (j == Jogador.X) {
+				} else if (ia.jogadaAvaliada == Jogador.X) {
 					return 2;
 				}
 			} else {
@@ -417,37 +423,37 @@ public class IaManager {
 		return Jogador.N;
 	}
 
-	public Jogador avaliarJogada ()
+	public void avaliarJogada ()
 	{
-		return avaliarJogada (true);
+		avaliarJogada (true);
 	}
-	public Jogador avaliarJogada (bool finalizavel)
+
+	public void avaliarJogada (bool finalizavel)
 	{
-		Jogador t;
-		t = avaliaEstados1 (finalizavel);
-		if (t != Jogador.N) {
-			return t;
+		jogadaAvaliada = avaliaEstados1 (finalizavel);
+		if (jogadaAvaliada != Jogador.N) {
+			return;
 		}
-		t = avaliaEstados2 (finalizavel);
-		if (t != Jogador.N) {
-			return t;
+		jogadaAvaliada = avaliaEstados2 (finalizavel);
+		if (jogadaAvaliada != Jogador.N) {
+			return;
 		}
-		t = avaliaEstados3 (finalizavel);
-		if (t != Jogador.N) {
-			return t;
+		jogadaAvaliada = avaliaEstados3 (finalizavel);
+		if (jogadaAvaliada != Jogador.N) {
+			return;
 		}
-		t = avaliaEstados4 (finalizavel);
-		if (t != Jogador.N) {
-			return t;
+		jogadaAvaliada = avaliaEstados4 (finalizavel);
+		if (jogadaAvaliada != Jogador.N) {
+			return;
 		}
-		t = avaliaEstados5 (finalizavel);
-		if (t != Jogador.N) {
-			return t;
+		jogadaAvaliada = avaliaEstados5 (finalizavel);
+		if (jogadaAvaliada != Jogador.N) {
+			return;
 		}
+		jogadaAvaliada = Jogador.N;
 		if (jogadasDisponiveis.Count == 0 && finalizavel)
 			fimDeJogo = true;
 		if (jogadasDisponiveis.Count == 0 && !finalizavel)
 			fimAvaliacao = true;
-		return Jogador.N;
 	}
 }

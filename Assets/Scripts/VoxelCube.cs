@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VoxelCube : MonoBehaviour {
 
@@ -9,6 +10,8 @@ public class VoxelCube : MonoBehaviour {
 	private static int cubeCount = 0;
 	private static List<GameObject> cubes;
 
+	public Text feedback;
+
 	public BoxCollider ccollider;
 
 	public GameObject[, , ] cubos = new GameObject[4,4,4];
@@ -16,6 +19,7 @@ public class VoxelCube : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		feedback.text = "";
 		int ii = 0;
 		for (float i = -3; i < 5; i+=2, ii++) {
 			int jj = 0;
@@ -56,6 +60,18 @@ public class VoxelCube : MonoBehaviour {
 				ItemIA it = idCubos [idJog];
 				Renderer rend = cubos[it.x, it.y, it.z].GetComponent<Renderer> ();
 				rend.material.color = Color.red;
+			}
+		}
+		if (IaManager.getInstance ().isGameOver ()) {
+			IaManager ia = IaManager.getInstance ();
+			if (ia.isGameOver ()) {
+				if (ia.Jogada == Jogador.X)
+					feedback.text = "Você Ganhou!";
+				else if (ia.Jogada == Jogador.O)
+					feedback.text = "Você Perdeu!";
+				else
+					feedback.text = "Empate!";
+				feedback.text += " Clique para continuar.";
 			}
 		}
 	}

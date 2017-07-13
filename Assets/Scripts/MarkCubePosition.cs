@@ -9,7 +9,12 @@ public class MarkCubePosition : MonoBehaviour {
 
 	void OnMouseDown() {
 		if (Input.GetMouseButton (0)) {
-			int c = System.Convert.ToInt32 (this.name.Split ('_') [1]);
+
+			if (IaManager.getInstance ().isGameOver ()) {
+				IaManager.Destroy ();
+				SceneManager.LoadScene("Menu", LoadSceneMode.Single);
+			}
+				
 			if (IaManager.getInstance ().jogadaPermitida (this.name)) {
 				rend.material.color = Color.blue;
 				IaManager.getInstance ().changeTurn (true);
@@ -18,10 +23,6 @@ public class MarkCubePosition : MonoBehaviour {
 			}
 			//Debug.Log (this.name);
 
-			if (IaManager.getInstance ().isGameOver ()) {
-				IaManager.Destroy ();
-				SceneManager.LoadScene("Menu", LoadSceneMode.Single);
-			}
 		}
 	}
 }
