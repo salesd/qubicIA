@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: dc234237b38b9a2488495282abb11875
+timeCreated: 1499916648
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: LOVE-YOU
+  fontNames:
+  - LOVE-YOU
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
